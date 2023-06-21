@@ -107,7 +107,33 @@ def upload_dataset(filename: str, file_content, db: Session) -> str:
 
 
 def assign_companies(dataset_id: str, db: Session):
-    pass
+    try:
+        companies_data = transaction.get_companies(dataset_id=dataset_id, db=db)
+
+        for company in companies_data:
+            company_info = transaction.find_company_by_name(
+                company_name=company.company, db=db
+            )
+            if company_info:
+                company.linkedin_url = company_info.linkedin_url
+            else:
+                company.linkedin_url = get_company_url(company_name=company.company)
+
+        db.commit()
+
+        transaction.update_dataset_state(
+            dataset_id=dataset_id,
+            status=DatasetState.COMPLETED,
+            db=db
+        )
+
+    except Exception as e:
+        transaction.update_dataset_state(
+            dataset_id=dataset_id,
+            status=DatasetState.ERROR,
+            db=db,
+            error_message=str(e),
+        )
 
 
 def fetch_results(dataset_id: str, db: Session) -> schemas.FileResponse:
