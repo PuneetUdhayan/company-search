@@ -1,7 +1,9 @@
 from fastapi import APIRouter, Depends, status, HTTPException, UploadFile
+from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 
 from app.database import get_db
+from app.database.models import DatasetState
 from app.internal.company_search import controller
 from app.internal.company_search import exceptions
 
@@ -22,4 +24,14 @@ def upload_companies_file(file: UploadFile, db: Session = Depends(get_db)):
 
 @router.get("/get-results/{datset_id}")
 def get_results(dataset_id: str, db: Session = Depends(get_db)):
-    pass
+    try:
+        result = controller.fetch_results(dataset_id=dataset_id, db=db)
+        if result.success:
+            return FileResponse(path=result.file_path, filename=result.file_name)
+        else:
+            return {
+                "job_status": "processing" if result.dataset_status == DatasetState.PROCESSING else "error",
+                "error_message":result.error_message
+            }
+    except exceptions.DatasetDoesNotExist as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"No dataset found for ID {dataset_id}")

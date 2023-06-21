@@ -23,5 +23,15 @@ class FileTooLarge(FileExceptions):
 class FileHeadersIncorrect(FileExceptions):
     def __init__(self):
         super().__init__(
-            "Please make sure uploaded file has column 'companies' that contains the companies name."
+            "Please make sure uploaded file has column 'company' that contains the companies name."
         )
+
+
+class BingApiNotReachable(Exception):
+    def __init__(self):
+        super().__init__("Bing API not reachable")
+
+
+class DatasetDoesNotExist(Exception):
+    def __init__(self):
+        super().__init__("Dataset does not exist")
