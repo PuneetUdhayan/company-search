@@ -1,17 +1,27 @@
-class FileFormatNotSupported(Exception):
+class FileExceptions(Exception):
+    def __init__(self, message):
+        super().__init__(message)
 
+
+class FileCorrupted(FileExceptions):
     def __init__(self):
-        self.super("Supported file format are xlsx and csv")
+        super().__init__("File uploaded is corrupted.")
 
 
-class FileTooLarge(Exception):
-
+class FileFormatNotSupported(FileExceptions):
     def __init__(self):
-        self.super("This service uses Bing API underneath, file size has been limied to 10 record per file to save cost.")
+        super().__init__("Supported file format are xlsx and csv")
 
 
-class FileHeadersIncorrect(Exception):
-
+class FileTooLarge(FileExceptions):
     def __init__(self):
-        self.super("Please make sure uploaded file has column 'companies' that contains the companies name.")
+        super().__init__(
+            "This service uses Bing API underneath, file size has been limied to 10 record per file to save cost."
+        )
 
+
+class FileHeadersIncorrect(FileExceptions):
+    def __init__(self):
+        super().__init__(
+            "Please make sure uploaded file has column 'companies' that contains the companies name."
+        )
