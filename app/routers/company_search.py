@@ -15,7 +15,7 @@ from app.internal.company_search import controller
 from app.internal.company_search import exceptions
 
 
-router = APIRouter(prefix="/Companies search", tags=["Company search"])
+router = APIRouter(prefix="/companies-search", tags=["Company search"])
 
 
 @router.post("/upload-file/")
